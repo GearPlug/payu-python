@@ -1,10 +1,10 @@
 class Tokenization(object):
-    TEST_BASE = 'https://sandbox.api.payulatam.com/payments-api/4.0/service.cgi '
+    TEST_BASE = 'https://sandbox.api.payulatam.com/payments-api/4.0/service.cgi'
     PROD_BASE = 'https://api.payulatam.com/payments-api/4.0/service.cgi'
 
     def __init__(self, client):
         self.client = client
-        self.url = self.PROD_BASE
+        self.url = self.TEST_BASE if self.client.is_test else self.PROD_BASE
 
     def create_single_token(self, *, payer_id, name, identification_number, payment_method, number, expiration_date):
         """
@@ -41,12 +41,28 @@ class Tokenization(object):
         return self.client._post(self.url, json=payload)
 
     def create_multiple_tokens(self):
-        return NotImplementedError
+        """
+        Using this feature you can register various customer’s credit card data and get token sequential numbers.
 
-    def individual_payment(self, *, reference_code, description, tx_value, currency, buyer, payer, credit_card_token_id,
-                           payment_method, payment_country, device_session_id, ip_address, cookie, user_agent,
-                           language=None, shipping_address=None, extra_parameters=None, notify_url=None,
-                           security_code=None):
+        For massive credit card tokenization you must create a file with CSV format with the following conditions:
+
+        Each credit card register to be tokenized must contain data for the registration of a credit card,
+        separated by commas in the following order: Payer ID, full name, credit card number, expiration date,
+        franchise, and identification number.
+
+        The file should have no header. The first line shows the first record.
+        The file must be encoded under the UTF-8 standard.
+        The file must not have more than 10,000 registers.
+
+        Returns:
+
+        """
+        raise NotImplementedError
+
+    def make_single_payment(self, *, reference_code, description, tx_value, currency, buyer, payer,
+                            credit_card_token_id, payment_method, payment_country, device_session_id, ip_address,
+                            cookie, user_agent, language=None, shipping_address=None, extra_parameters=None,
+                            notify_url=None, security_code=None):
         """
         This feature allows you to make collections using a Token code that was previously created by our system,
         and which was used to store your customers’ credit cards data safely.
@@ -201,8 +217,26 @@ class Tokenization(object):
         }
         return self.client._post(self.url, json=payload)
 
-    def massive_payments(self):
-        return NotImplementedError
+    def make_multiple_payments(self):
+        """
+        This feature will allow you to make massive collections using the Token that were previously created by our
+        system
+
+        For this functionality you need to create a CSV file under the following conditions:
+
+        Each transaction register to be processed must contain its processing data separated by commas in the
+        following order: Account ID (identifier of the virtual PayU account), Token, security code,
+        number of installments, sale Reference, sale description, buyer’s email, currency (ISO code),
+        total (including tax), tax, base value of reimbursement, additional value, language (ISO code).
+
+        The file should have no header. The first line shows the first record.
+        The file must be encoded under the UTF-8 standard.
+        The file must not have more than 10,000 records.
+
+        Returns:
+
+        """
+        raise NotImplementedError
 
     def get_tokens(self, *, payer_id, credit_card_token_id, start_date, end_date):
         """

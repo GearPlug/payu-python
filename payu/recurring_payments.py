@@ -223,7 +223,7 @@ class Recurring(object):
         return self.client._get(self.url + 'creditCards/{}'.format(credit_card_id), headers=self.get_headers())
 
     def update_credit_card(self):
-        return NotImplementedError
+        raise NotImplementedError
 
     def delete_credit_card(self, *, customer_id, credit_card_id):
         """

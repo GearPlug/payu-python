@@ -1,10 +1,13 @@
+from .enums import TransactionType
+
+
 class Payment(object):
-    TEST_BASE = 'https://sandbox.api.payulatam.com/payments-api/4.0/service.cgi '
+    TEST_BASE = 'https://sandbox.api.payulatam.com/payments-api/4.0/service.cgi'
     PROD_BASE = 'https://api.payulatam.com/payments-api/4.0/service.cgi'
 
     def __init__(self, client):
         self.client = client
-        self.url = self.PROD_BASE
+        self.url = self.TEST_BASE if self.client.is_test else self.PROD_BASE
 
     def ping(self):
         payload = {
@@ -30,10 +33,19 @@ class Payment(object):
         }
         return self.client._post(self.url, json=payload)
 
-    def submit_transaction(self, *, reference_code, description, tx_value, tx_tax, tx_tax_return_base, currency, buyer,
-                           payer, credit_card, payment_method, payment_country, device_session_id, ip_address, cookie,
-                           user_agent, language=None, shipping_address=None, extra_parameters=None, notify_url=None):
+    def make_payment(self, *, reference_code, description, tx_value, tx_tax, tx_tax_return_base, currency, buyer,
+                     payer, credit_card, payment_method, payment_country, device_session_id, ip_address, cookie,
+                     user_agent, language=None, shipping_address=None, extra_parameters=None, notify_url=None,
+                     transaction_type=TransactionType.AUTHORIZATION_AND_CAPTURE):
         """
+        Authorization: used to verify if a credit card is active, if it has funds, etc.
+        The transaction is not complete until a transaction capture is sent (only available for accounts in Brazil).
+
+        Capture: terminates a previously authorized transaction.
+        This is when the account makes a debit to the card (only available for accounts in Brazil).
+
+        Authorization and capture: this is the most used type of transaction.
+        This option sends the transaction amount to authorization and if it is approved immediately capture is performed.
 
         Args:
             reference_code: The reference code of the order. It represents the identifier of the transaction
@@ -150,10 +162,11 @@ class Payment(object):
             notify_url: The URL notification or order confirmation.
             Alphanumeric. Max: 2048.
 
+            transaction_type:
+
         Returns:
 
         """
-
         payload = {
             "language": self.client.language,
             "command": "SUBMIT_TRANSACTION",
@@ -189,13 +202,65 @@ class Payment(object):
                 "payer": payer,
                 "creditCard": credit_card,
                 "extraParameters": extra_parameters,
-                "type": "AUTHORIZATION_AND_CAPTURE",
+                "type": transaction_type.value,
                 "paymentMethod": payment_method,
                 "paymentCountry": payment_country,
                 "deviceSessionId": device_session_id,
                 "ipAddress": ip_address,
                 "cookie": cookie,
                 "userAgent": user_agent
+            },
+            "test": self.client.is_test
+        }
+        return self.client._post(self.url, json=payload)
+
+    def make_authorization(self, **kwargs):
+        kwargs['transaction_type'] = TransactionType.AUTHORIZATION
+        return self.make_payment(**kwargs)
+
+    def make_capture(self, *, order_id, parent_transaction_id):
+        payload = {
+            "language": self.client.language,
+            "command": "SUBMIT_TRANSACTION",
+            "merchant": {
+                "apiLogin": self.client.api_login,
+                "apiKey": self.client.api_key
+            },
+            "transaction": {
+                "order": {
+                    "id": order_id
+                },
+                "type": "CAPTURE",
+                "parentTransactionId": parent_transaction_id
+            },
+            "test": self.client.is_test
+        }
+        return self.client._post(self.url, json=payload)
+
+    def cancel_payment(self):
+        """
+        Cancellation: used to reverse a previously authorized transaction (only available for accounts in Brazil).
+
+        Returns:
+
+        """
+        raise NotImplementedError
+
+    def refund_payment(self, *, order_id, parent_transaction_id, reason):
+        payload = {
+            "language": self.client.language,
+            "command": "SUBMIT_TRANSACTION",
+            "merchant": {
+                "apiLogin": self.client.api_login,
+                "apiKey": self.client.api_key
+            },
+            "transaction": {
+                "order": {
+                    "id": order_id
+                },
+                "type": "REFUND",
+                "parentTransactionId": parent_transaction_id,
+                "reason": reason
             },
             "test": self.client.is_test
         }
