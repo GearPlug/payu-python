@@ -36,47 +36,32 @@ class Payment(object):
         """
 
         Args:
-            reference_code:
-            The reference code of the order.
+            reference_code: The reference code of the order. It represents the identifier of the transaction
+            in the shop’s system.
+            Alphanumeric. Min: 1 Max: 255.
 
-            It represents the identifier of the transaction in the shop’s system.
+            description: The description of the order.
+            Alphanumeric. Min: 1 Max: 255.
 
-            Alphanumeric. Min: 1 Max: 255
-
-            description:
-            The description of the order.
-
-            Alphanumeric. Min: 1 Max: 255
-
-            tx_value:
-            TX_VALUE, it is the total amount of the transaction. It can contain two decimal digits.
+            tx_value: TX_VALUE, it is the total amount of the transaction. It can contain two decimal digits.
             For example 10000.00 and 10000.
+            Alphanumeric. 64.
 
-            Alphanumeric. 64
-
-            tx_tax:
-            TX_TAX, it is the value of the VAT (Value Added Tax only valid for Colombia) of the transaction,
+            tx_tax: TX_TAX, it is the value of the VAT (Value Added Tax only valid for Colombia) of the transaction,
             if no VAT is sent, the system will apply 19% automatically. It can contain two decimal digits.
             Example 19000.00. In case you have no VAT you should fill out 0.
+            Alphanumeric. 64.
 
-            Alphanumeric. 64
+            tx_tax_return_base: TX_TAX_RETURN_BASE, it is the base value on which VAT (only valid for Colombia)
+            is calculated. If you do not have VAT should be sent to 0.
+            Alphanumeric. 64.
 
-            tx_tax_return_base:
-            TX_TAX_RETURN_BASE, it is the base value on which VAT (only valid for Colombia) is calculated.
-            If you do not have VAT should be sent to 0.
-
-            Alphanumeric. 64
-
-            currency:
-            The ISO currency code associated with the amount.
+            currency: The ISO currency code associated with the amount.
             http://developers.payulatam.com/en/api/variables_table.html
+            Alphanumeric. 3.
 
-            Alphanumeric. 3
-
-            buyer:
-            Buyer’s shipping address.
-
-            Examples
+            buyer: Buyer’s shipping address.
+            Example.
             {
                 "merchantBuyerId": "1",
                 "fullName": "First name and second buyer  name",
@@ -94,10 +79,8 @@ class Payment(object):
                 }
             }
 
-            payer:
-            Payer’s data.
-
-            Examples
+            payer: Payer’s data.
+            Example.
             {
                 "merchantPayerId": "1",
                 "fullName": "First name and second payer name",
@@ -115,10 +98,8 @@ class Payment(object):
                 }
             }
 
-            credit_card:
-            Debit card’s data.
-
-            Examples
+            credit_card: Debit card’s data.
+            Example.
             {
                 "number": "4097440000000004",
                 "securityCode": "321",
@@ -126,45 +107,29 @@ class Payment(object):
                 "name": "APPROVED"
             }
 
-            payment_method:
-            Payment method.
+            payment_method: Payment method.
+            Alphanumeric. 32.
 
-            Alphanumeric. 32
-
-            payment_country:
-            Payment countries.
+            payment_country: Payment countries.
             http://developers.payulatam.com/en/api/variables_table.html
 
+            device_session_id: The session identifier of the device where the transaction was performed from.
+            Alphanumeric. Max: 255.
 
-            device_session_id:
-            The session identifier of the device where the transaction was performed from.
+            ip_address: The IP address of the device where the transaction was performed from.
+            Alphanumeric. Max: 39.
 
-            Alphanumeric. Max: 255
+            cookie: The cookie stored on the device where the transaction was performed from.
+            Alphanumeric. Max: 255.
 
-            ip_address:
-            The IP address of the device where the transaction was performed from.
-
-            Alphanumeric. Max: 39
-
-            cookie:
-            The cookie stored on the device where the transaction was performed from.
-
-            Alphanumeric. Max: 255
-
-            user_agent:
-            The user agent of the browser from which the transaction was performed.
-
+            user_agent: The user agent of the browser from which the transaction was performed.
             Alphanumeric. Max: 1024
 
-            language:
-            The language used in the emails that are sent to the buyer and seller.
-
+            language: The language used in the emails that are sent to the buyer and seller.
             Alphanumeric. 2
 
-            shipping_address:
-            The shipping address.
-
-            Examples
+            shipping_address: The shipping address.
+            Example.
             {
                 "street1": "calle 100",
                 "street2": "5555487",
@@ -175,19 +140,15 @@ class Payment(object):
                 "phone": "7563126"
             }
 
-            extra_parameters:
-            Additional parameters or data associated with a transaction.
-            These parameters may vary according to the payment means or shop’s preferences.
-
-            Examples
+            extra_parameters: Additional parameters or data associated with a transaction. These parameters may vary
+            according to the payment means or shop’s preferences.
+            Example.
             {
                 "INSTALLMENTS_NUMBER": 1
             }
 
-            notify_url:
-            The URL notification or order confirmation.
-
-            Alphanumeric. Max: 2048
+            notify_url: The URL notification or order confirmation.
+            Alphanumeric. Max: 2048.
 
         Returns:
 

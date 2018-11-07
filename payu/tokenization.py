@@ -4,10 +4,11 @@ class Tokenization(object):
 
     def __init__(self, client):
         self.client = client
-        self.url = self.TEST_BASE
+        self.url = self.PROD_BASE
 
-    def create_single_token(self, payer_id, name, identification_number, payment_method, number, expiration_date):
+    def create_single_token(self, *, payer_id, name, identification_number, payment_method, number, expiration_date):
         """
+        Using this feature you can register a customer’s credit card data and get a token sequential number.
 
         Args:
             payer_id:
@@ -47,36 +48,27 @@ class Tokenization(object):
                            language=None, shipping_address=None, extra_parameters=None, notify_url=None,
                            security_code=None):
         """
+        This feature allows you to make collections using a Token code that was previously created by our system,
+        and which was used to store your customers’ credit cards data safely.
 
         Args:
-            reference_code:
-            The reference code of the order.
+            reference_code: The reference code of the order. It represents the identifier of the transaction
+            in the shop’s system.
+            Alphanumeric. Min: 1 Max: 255.
 
-            It represents the identifier of the transaction in the shop’s system.
+            description: The description of the order.
+            Alphanumeric. Min: 1 Max: 255.
 
-            Alphanumeric. Min: 1 Max: 255
-
-            description:
-            The description of the order.
-
-            Alphanumeric. Min: 1 Max: 255
-
-            tx_value:
-            TX_VALUE, it is the total amount of the transaction. It can contain two decimal digits.
+            tx_value: TX_VALUE, it is the total amount of the transaction. It can contain two decimal digits.
             For example 10000.00 and 10000.
+            Alphanumeric. 64.
 
-            Alphanumeric. 64
-
-            currency:
-            The ISO currency code associated with the amount.
+            currency: The ISO currency code associated with the amount.
             http://developers.payulatam.com/en/api/variables_table.html
+            Alphanumeric. 3.
 
-            Alphanumeric. 3
-
-            buyer:
-            Buyer’s shipping address.
-
-            Examples
+            buyer: Buyer’s shipping address.
+            Example.
             {
                 "merchantBuyerId": "1",
                 "fullName": "First name and second buyer  name",
@@ -94,10 +86,8 @@ class Tokenization(object):
                 }
             }
 
-            payer:
-            Payer’s data.
-
-            Examples
+            payer: Payer’s data.
+            Example.
             {
                 "merchantPayerId": "1",
                 "fullName": "First name and second payer name",
@@ -115,10 +105,8 @@ class Tokenization(object):
                 }
             }
 
-            credit_card_token_id:
-            Debit card’s data.
-
-            Examples
+            credit_card_token_id: Debit card’s data.
+            Example.
             {
                 "number": "4097440000000004",
                 "securityCode": "321",
@@ -126,45 +114,29 @@ class Tokenization(object):
                 "name": "APPROVED"
             }
 
-            payment_method:
-            Payment method.
+            payment_method: Payment method.
+            Alphanumeric. 32.
 
-            Alphanumeric. 32
-
-            payment_country:
-            Payment countries.
+            payment_country: Payment countries.
             http://developers.payulatam.com/en/api/variables_table.html
 
+            device_session_id: The session identifier of the device where the transaction was performed from.
+            Alphanumeric. Max: 255.
 
-            device_session_id:
-            The session identifier of the device where the transaction was performed from.
+            ip_address: The IP address of the device where the transaction was performed from.
+            Alphanumeric. Max: 39.
 
-            Alphanumeric. Max: 255
+            cookie: The cookie stored on the device where the transaction was performed from.
+            Alphanumeric. Max: 255.
 
-            ip_address:
-            The IP address of the device where the transaction was performed from.
+            user_agent: The user agent of the browser from which the transaction was performed.
+            Alphanumeric. Max: 1024.
 
-            Alphanumeric. Max: 39
+            language: The language used in the emails that are sent to the buyer and seller.
+            Alphanumeric. 2.
 
-            cookie:
-            The cookie stored on the device where the transaction was performed from.
-
-            Alphanumeric. Max: 255
-
-            user_agent:
-            The user agent of the browser from which the transaction was performed.
-
-            Alphanumeric. Max: 1024
-
-            language:
-            The language used in the emails that are sent to the buyer and seller.
-
-            Alphanumeric. 2
-
-            shipping_address:
-            The shipping address.
-
-            Examples
+            shipping_address: The shipping address.
+            Example.
             {
                 "street1": "calle 100",
                 "street2": "5555487",
@@ -175,21 +147,17 @@ class Tokenization(object):
                 "phone": "7563126"
             }
 
-            extra_parameters:
-            Additional parameters or data associated with a transaction.
-            These parameters may vary according to the payment means or shop’s preferences.
-
-            Examples
+            extra_parameters: Additional parameters or data associated with a transaction. These parameters may vary
+            according to the payment means or shop’s preferences.
+            Example.
             {
                 "INSTALLMENTS_NUMBER": 1
             }
 
-            notify_url:
-            The URL notification or order confirmation.
+            notify_url: The URL notification or order confirmation.
+            Alphanumeric. Max: 2048.
 
-            Alphanumeric. Max: 2048
-
-            security_code:
+            security_code: CVV.
 
         Returns:
 
@@ -236,7 +204,19 @@ class Tokenization(object):
     def massive_payments(self):
         return NotImplementedError
 
-    def get_tokens(self, payer_id, credit_card_token_id, start_date, end_date):
+    def get_tokens(self, *, payer_id, credit_card_token_id, start_date, end_date):
+        """
+        With this functionality you can query previously the Credit Cards Token.
+
+        Args:
+            payer_id:
+            credit_card_token_id:
+            start_date:
+            end_date:
+
+        Returns:
+
+        """
         payload = {
             "language": self.client.language,
             "command": "GET_TOKENS",
@@ -254,7 +234,17 @@ class Tokenization(object):
         }
         return self.client._post(self.url, json=payload)
 
-    def remove_token(self, payer_id, credit_card_token_id):
+    def remove_token(self, *, payer_id, credit_card_token_id):
+        """
+        This feature allows you to delete a tokenized credit card register.
+
+        Args:
+            payer_id:
+            credit_card_token_id:
+
+        Returns:
+
+        """
         payload = {
             "language": self.client.language,
             "command": "REMOVE_TOKEN",
