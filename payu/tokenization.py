@@ -199,7 +199,8 @@ class Tokenization(object):
         franchises = get_available_franchise_for_tokenization(payment_country, transaction_type)
         if not franchises or payment_method not in franchises:
             fmt = 'The credit card franchise {} with transaction type {} is not available for {}.'
-            raise FranchiseUnavailableError(fmt.format(payment_method.value, transaction_type.value, payment_country.name))
+            raise FranchiseUnavailableError(
+                fmt.format(payment_method.value, transaction_type.value, payment_country.name))
 
         if has_franchise_cvv_tokenization(payment_method, payment_country, transaction_type) and not security_code:
             fmt = 'Card verification value (CVV) is required for franchise {} with transaction type {} in {}.'

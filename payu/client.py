@@ -1,4 +1,5 @@
 import hashlib
+import logging
 
 import requests
 
@@ -7,10 +8,20 @@ from .payments import Payment
 from .recurring_payments import Recurring
 from .tokenization import Tokenization
 
+fh = logging.FileHandler('spam.log')
+fh.setLevel(logging.DEBUG)
+
+ch = logging.StreamHandler()
+ch.setLevel(logging.WARNING)
+
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fh.setFormatter(formatter)
+ch.setFormatter(formatter)
+
 
 class Client(object):
 
-    def __init__(self, api_login, api_key, merchant_id, account_id, test=False, language=Language.ENGLISH):
+    def __init__(self, api_login, api_key, merchant_id, account_id, test=False, language=Language.ENGLISH, debug=False):
         self.api_login = api_login
         self.api_key = api_key
         self.merchant_id = merchant_id
@@ -21,13 +32,24 @@ class Client(object):
             language = Language(language)
         self.language = language
 
+        self.debug = debug
+
         self.payments = Payment(self)
         self.recurring = Recurring(self)
         self.tokenization = Tokenization(self)
 
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.DEBUG)
+        self.logger.addHandler(fh)
+        self.logger.addHandler(ch)
+
     @property
     def is_test(self):
         return self.test
+
+    @property
+    def is_debug(self):
+        return self.debug
 
     def _get(self, url, **kwargs):
         return self._request('GET', url, **kwargs)
@@ -48,14 +70,19 @@ class Client(object):
         }
         if headers:
             _headers.update(headers)
-        print(method, url, headers)
-        print(kwargs)
+
+        if self.is_debug:
+            self.logger.debug('{} {} {} {}'.format(method, url, headers, kwargs))
         return self._parse(requests.request(method, url, headers=_headers, **kwargs))
 
     def _parse(self, response):
         if 'Content-Type' in response.headers and 'application/json' in response.headers['Content-Type']:
             r = response.json()
         else:
+            if self.is_debug:
+                fmt = 'The response with status code ({}) is not JSON deserializable. Response: {}'
+                self.logger.warning(fmt.format(response.status_code, response.text))
+
             r = response.text
         return r
 

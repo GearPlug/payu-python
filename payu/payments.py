@@ -1,6 +1,7 @@
 from .enumerators import Country, Currency, Franchise, PaymentCommand, TransactionType
+from .exceptions import CVVRequiredError
 from .utils import get_available_franchise_for_payment
-from .exceptions import CVVRequiredError, FranchiseUnavailableError
+
 
 class Payment(object):
     TEST_BASE = 'https://sandbox.api.payulatam.com/payments-api/4.0/service.cgi'
