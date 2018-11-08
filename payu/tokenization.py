@@ -1,3 +1,8 @@
+from .enumerators import Country, Currency, Franchise, PaymentCommand, TransactionType
+from .exceptions import CVVRequiredError, FranchiseUnavailableError
+from .utils import get_available_franchise_for_tokenization, has_franchise_cvv_tokenization
+
+
 class Tokenization(object):
     TEST_BASE = 'https://sandbox.api.payulatam.com/payments-api/4.0/service.cgi'
     PROD_BASE = 'https://api.payulatam.com/payments-api/4.0/service.cgi'
@@ -22,8 +27,8 @@ class Tokenization(object):
 
         """
         payload = {
-            "language": self.client.language,
-            "command": "CREATE_TOKEN",
+            "language": self.client.language.value,
+            "command": PaymentCommand.CREATE_TOKEN.value,
             "merchant": {
                 "apiLogin": self.client.api_login,
                 "apiKey": self.client.api_key
@@ -59,10 +64,10 @@ class Tokenization(object):
         """
         raise NotImplementedError
 
-    def make_single_payment(self, *, reference_code, description, tx_value, currency, buyer, payer,
-                            credit_card_token_id, payment_method, payment_country, device_session_id, ip_address,
-                            cookie, user_agent, language=None, shipping_address=None, extra_parameters=None,
-                            notify_url=None, security_code=None):
+    def make_payment(self, *, reference_code, description, tx_value, currency, buyer, payer, credit_card_token_id,
+                     payment_method, payment_country, device_session_id, ip_address, cookie, user_agent, language=None,
+                     shipping_address=None, extra_parameters=None, notify_url=None,
+                     transaction_type=TransactionType.AUTHORIZATION_AND_CAPTURE, security_code=None):
         """
         This feature allows you to make collections using a Token code that was previously created by our system,
         and which was used to store your customers’ credit cards data safely.
@@ -173,14 +178,36 @@ class Tokenization(object):
             notify_url: The URL notification or order confirmation.
             Alphanumeric. Max: 2048.
 
+            transaction_type:
             security_code: CVV.
 
         Returns:
 
         """
+        if not isinstance(payment_country, Country):
+            payment_country = Country(payment_country)
+
+        if not isinstance(transaction_type, TransactionType):
+            transaction_type = TransactionType(transaction_type)
+
+        if not isinstance(payment_method, Franchise):
+            payment_method = Franchise(payment_method)
+
+        if not isinstance(currency, Currency):
+            currency = Currency(currency)
+
+        franchises = get_available_franchise_for_tokenization(payment_country, transaction_type)
+        if not franchises or payment_method not in franchises:
+            fmt = 'The credit card franchise {} with transaction type {} is not available for {}.'
+            raise FranchiseUnavailableError(fmt.format(payment_method.value, transaction_type.value, payment_country.name))
+
+        if has_franchise_cvv_tokenization(payment_method, payment_country, transaction_type) and not security_code:
+            fmt = 'Card verification value (CVV) is required for franchise {} with transaction type {} in {}.'
+            raise CVVRequiredError(fmt.format(payment_country.value, transaction_type.value, payment_country.name))
+
         payload = {
-            "language": self.client.language,
-            "command": "SUBMIT_TRANSACTION",
+            "language": self.client.language.value,
+            "command": PaymentCommand.SUBMIT_TRANSACTION.value,
             "merchant": {
                 "apiKey": self.client.api_key,
                 "apiLogin": self.client.api_login
@@ -190,13 +217,13 @@ class Tokenization(object):
                     "accountId": self.client.account_id,
                     "referenceCode": reference_code,
                     "description": description,
-                    "language": language or self.client.language,
-                    "signature": self.client._get_signature(reference_code, tx_value, currency),
+                    "language": language or self.client.language.value,
+                    "signature": self.client._get_signature(reference_code, tx_value, currency.value),
                     "notifyUrl": notify_url,
                     "additionalValues": {
                         "TX_VALUE": {
                             "value": tx_value,
-                            "currency": currency
+                            "currency": currency.value
                         }
                     },
                     "buyer": buyer,
@@ -205,13 +232,40 @@ class Tokenization(object):
                 "payer": payer,
                 "creditCardTokenId": credit_card_token_id,
                 "extraParameters": extra_parameters,
-                "type": "AUTHORIZATION_AND_CAPTURE",
-                "paymentMethod": payment_method,
-                "paymentCountry": payment_country,
+                "type": transaction_type.value,
+                "paymentMethod": payment_method.value,
+                "paymentCountry": payment_country.value,
                 "deviceSessionId": device_session_id,
                 "ipAddress": ip_address,
                 "cookie": cookie,
                 "userAgent": user_agent
+            },
+            "test": self.client.is_test
+        }
+        if security_code:
+            payload['transaction']['creditCard'] = {
+                'securityCode': security_code
+            }
+        return self.client._post(self.url, json=payload)
+
+    def make_authorization(self, **kwargs):
+        kwargs['transaction_type'] = TransactionType.AUTHORIZATION
+        return self.make_payment(**kwargs)
+
+    def make_capture(self, *, order_id, parent_transaction_id):
+        payload = {
+            "language": self.client.language.value,
+            "command": PaymentCommand.SUBMIT_TRANSACTION.value,
+            "merchant": {
+                "apiLogin": self.client.api_login,
+                "apiKey": self.client.api_key
+            },
+            "transaction": {
+                "order": {
+                    "id": order_id
+                },
+                "type": TransactionType.CAPTURE.value,
+                "parentTransactionId": parent_transaction_id
             },
             "test": self.client.is_test
         }
@@ -252,8 +306,8 @@ class Tokenization(object):
 
         """
         payload = {
-            "language": self.client.language,
-            "command": "GET_TOKENS",
+            "language": self.client.language.value,
+            "command": PaymentCommand.GET_TOKENS.value,
             "merchant": {
                 "apiLogin": self.client.api_login,
                 "apiKey": self.client.api_key
@@ -280,8 +334,8 @@ class Tokenization(object):
 
         """
         payload = {
-            "language": self.client.language,
-            "command": "REMOVE_TOKEN",
+            "language": self.client.language.value,
+            "command": PaymentCommand.REMOVE_TOKEN.value,
             "merchant": {
                 "apiLogin": self.client.api_login,
                 "apiKey": self.client.api_key

@@ -2,6 +2,7 @@ import hashlib
 
 import requests
 
+from .enumerators import Language
 from .payments import Payment
 from .recurring_payments import Recurring
 from .tokenization import Tokenization
@@ -9,12 +10,15 @@ from .tokenization import Tokenization
 
 class Client(object):
 
-    def __init__(self, api_login, api_key, merchant_id, account_id, test=False, language='en'):
+    def __init__(self, api_login, api_key, merchant_id, account_id, test=False, language=Language.ENGLISH):
         self.api_login = api_login
         self.api_key = api_key
         self.merchant_id = merchant_id
         self.account_id = account_id
         self.test = test
+
+        if not isinstance(language, Language):
+            language = Language(language)
         self.language = language
 
         self.payments = Payment(self)
@@ -44,6 +48,8 @@ class Client(object):
         }
         if headers:
             _headers.update(headers)
+        print(method, url, headers)
+        print(kwargs)
         return self._parse(requests.request(method, url, headers=_headers, **kwargs))
 
     def _parse(self, response):

@@ -1,5 +1,6 @@
-from .enums import TransactionType
-
+from .enumerators import Country, Currency, Franchise, PaymentCommand, TransactionType
+from .utils import get_available_franchise_for_payment
+from .exceptions import CVVRequiredError, FranchiseUnavailableError
 
 class Payment(object):
     TEST_BASE = 'https://sandbox.api.payulatam.com/payments-api/4.0/service.cgi'
@@ -12,8 +13,8 @@ class Payment(object):
     def ping(self):
         payload = {
             'test': self.client.is_test,
-            'language': self.client.language,
-            'command': 'PING',
+            'language': self.client.language.value,
+            'command': PaymentCommand.PING.value,
             'merchant': {
                 'apiLogin': self.client.api_login,
                 'apiKey': self.client.api_key
@@ -24,8 +25,8 @@ class Payment(object):
     def get_payments_methods(self):
         payload = {
             'test': self.client.is_test,
-            'language': self.client.language,
-            'command': 'GET_PAYMENT_METHODS',
+            'language': self.client.language.value,
+            'command': PaymentCommand.GET_PAYMENT_METHODS.value,
             'merchant': {
                 'apiLogin': self.client.api_login,
                 'apiKey': self.client.api_key
@@ -167,9 +168,26 @@ class Payment(object):
         Returns:
 
         """
+        if not isinstance(payment_country, Country):
+            payment_country = Country(payment_country)
+
+        if not isinstance(transaction_type, TransactionType):
+            transaction_type = TransactionType(transaction_type)
+
+        if not isinstance(payment_method, Franchise):
+            payment_method = Franchise(payment_method)
+
+        if not isinstance(currency, Currency):
+            currency = Currency(currency)
+
+        franchises = get_available_franchise_for_payment(payment_country, transaction_type)
+        if not franchises or payment_method not in franchises:
+            fmt = 'The credit card franchise {} with transaction type {} is not available for {}.'
+            raise CVVRequiredError(fmt.format(payment_method.value, transaction_type.value, payment_country.name))
+
         payload = {
-            "language": self.client.language,
-            "command": "SUBMIT_TRANSACTION",
+            "language": self.client.language.value,
+            "command": PaymentCommand.SUBMIT_TRANSACTION.value,
             "merchant": {
                 "apiKey": self.client.api_key,
                 "apiLogin": self.client.api_login
@@ -179,21 +197,21 @@ class Payment(object):
                     "accountId": self.client.account_id,
                     "referenceCode": reference_code,
                     "description": description,
-                    "language": language or self.client.language,
-                    "signature": self.client._get_signature(reference_code, tx_value, currency),
+                    "language": language or self.client.language.value,
+                    "signature": self.client._get_signature(reference_code, tx_value, currency.value),
                     "notifyUrl": notify_url,
                     "additionalValues": {
                         "TX_VALUE": {
                             "value": tx_value,
-                            "currency": currency
+                            "currency": currency.value
                         },
                         "TX_TAX": {
                             "value": tx_tax,
-                            "currency": currency
+                            "currency": currency.value
                         },
                         "TX_TAX_RETURN_BASE": {
                             "value": tx_tax_return_base,
-                            "currency": currency
+                            "currency": currency.value
                         }
                     },
                     "buyer": buyer,
@@ -203,8 +221,8 @@ class Payment(object):
                 "creditCard": credit_card,
                 "extraParameters": extra_parameters,
                 "type": transaction_type.value,
-                "paymentMethod": payment_method,
-                "paymentCountry": payment_country,
+                "paymentMethod": payment_method.value,
+                "paymentCountry": payment_country.value,
                 "deviceSessionId": device_session_id,
                 "ipAddress": ip_address,
                 "cookie": cookie,
@@ -220,8 +238,8 @@ class Payment(object):
 
     def make_capture(self, *, order_id, parent_transaction_id):
         payload = {
-            "language": self.client.language,
-            "command": "SUBMIT_TRANSACTION",
+            "language": self.client.language.value,
+            "command": PaymentCommand.SUBMIT_TRANSACTION.value,
             "merchant": {
                 "apiLogin": self.client.api_login,
                 "apiKey": self.client.api_key
@@ -230,7 +248,7 @@ class Payment(object):
                 "order": {
                     "id": order_id
                 },
-                "type": "CAPTURE",
+                "type": TransactionType.CAPTURE.value,
                 "parentTransactionId": parent_transaction_id
             },
             "test": self.client.is_test
@@ -248,8 +266,8 @@ class Payment(object):
 
     def refund_payment(self, *, order_id, parent_transaction_id, reason):
         payload = {
-            "language": self.client.language,
-            "command": "SUBMIT_TRANSACTION",
+            "language": self.client.language.value,
+            "command": PaymentCommand.SUBMIT_TRANSACTION.value,
             "merchant": {
                 "apiLogin": self.client.api_login,
                 "apiKey": self.client.api_key
@@ -258,7 +276,7 @@ class Payment(object):
                 "order": {
                     "id": order_id
                 },
-                "type": "REFUND",
+                "type": TransactionType.REFUND.value,
                 "parentTransactionId": parent_transaction_id,
                 "reason": reason
             },

@@ -1,0 +1,100 @@
+from enum import Enum
+
+
+class Language(Enum):
+    ENGLISH = 'en'
+    SPANISH = 'es'
+    PORTUGUESE = 'pt'
+
+
+class Country(Enum):
+    ARGENTINA = 'AR'
+    BRAZIL = 'BR'
+    COLOMBIA = 'CO'
+    MEXICO = 'MX'
+    PANAMA = 'PA'
+    PERU = 'PE'
+    CHILE = 'CL'
+
+
+class Currency(Enum):
+    ARGENTINA = 'ARS'
+    BRAZIL = 'BRL'
+    COLOMBIA = 'COP'
+    MEXICO = 'MXN'
+    USD = 'USD'
+    PERU = 'PEN'
+    CHILE = 'CLP'
+
+
+class Franchise(Enum):
+    VISA = 'VISA'
+    MASTERCARD = 'MASTERCARD'
+    AMEX = 'AMEX'
+    DINERS = 'DINERS'
+    ELO = 'ELO'
+    NARANJA = 'NARANJA'
+    SHOPPING = 'SHOPPING'
+    CABAL = 'CABAL'
+    ARGENCARD = 'ARGENCARD'
+    CENCOSUD = 'CENCOSUD'
+    HIPERCARD = 'HIPERCARD'
+    CODENSA = 'CODENSA'
+    VISA_DEBIT = 'VISA_DEBIT'
+
+
+class DocumentType(Enum):
+    CITIZENSHIP_CARD = 'CC'
+    FOREIGN_CITIZENSHIP_CARD = 'CE'
+    COMPANY = 'NIT'
+    IDENTITY_CARD = 'TI'
+    PASSPORT = 'PP'
+    CLIENT_UNIQUE_IDENTIFIER = 'IDC'
+    MOBILE_LINE = 'CEL'
+    BIRTH_CERTIFICATE = 'RC'
+    FOREIGN_IDENTIFICATION_DOCUMENT = 'DE'
+
+
+class TransactionType(Enum):
+    AUTHORIZATION = 'AUTHORIZATION'
+    CAPTURE = 'CAPTURE'
+    AUTHORIZATION_AND_CAPTURE = 'AUTHORIZATION_AND_CAPTURE'
+    VOID = 'VOID'
+    REFUND = 'REFUND'
+
+
+class TransactionState(Enum):
+    APPROVED = 'APPROVED'
+    DECLINED = 'DECLINED'
+    ERROR = 'ERROR'
+    EXPIRED = 'EXPIRED'
+    PENDING = 'PENDING'
+    SUBMITTED = 'SUBMITTED'
+
+
+class OrderStatus(Enum):
+    NEW = 'NEW'
+    IN_PROGRESS = 'IN_PROGRESS'
+    AUTHORIZED = 'AUTHORIZED'
+    CAPTURED = 'CAPTURED'
+    CANCELLED = 'CANCELLED'
+    DECLINED = 'DECLINED'
+    REFUNDED = 'REFUNDED'
+
+
+class PaymentCommand(Enum):
+    PING = 'PING'
+    SUBMIT_TRANSACTION = 'SUBMIT_TRANSACTION'
+    GET_PAYMENT_METHODS = 'GET_PAYMENT_METHODS'
+    GET_BANK_LIST = 'GET_BANK_LIST'
+
+    CREATE_TOKEN = 'CREATE_TOKEN'
+    GET_TOKENS = 'GET_TOKENS'
+    REMOVE_TOKEN = 'REMOVE_TOKEN'
+
+
+class QueryCommand(Enum):
+    PING = 'PING'
+    ORDER_DETAIL = 'ORDER_DETAIL'
+    ORDER_DETAIL_REFERENCE_CODE = 'ORDER_DETAIL_REFERENCE_CODE'
+    TRANSACTION_RESPONSE_DETAIL = 'TRANSACTION_RESPONSE_DETAIL'
