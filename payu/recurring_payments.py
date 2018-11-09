@@ -327,6 +327,131 @@ class Recurring(object):
         """
         return self.client._delete(self.url + 'subscriptions/{}'.format(subscription_id), headers=self.get_headers())
 
+    def create_additional_charge(self, *, subscription_id, description, plan_value, plan_tax, plan_tax_return_base,
+                                 currency):
+        """
+        Adds extra charges to the respective invoice for the current period.
+
+        Args:
+            subscription_id: Identification of the subscription
+            description:
+            plan_value:
+            plan_tax:
+            plan_tax_return_base:
+            currency:
+
+        Returns:
+
+        """
+        payload = {
+            "description": description,
+            "additionalValues": [
+                {
+                    "name": "ITEM_VALUE",
+                    "value": plan_value,
+                    "currency": currency
+                },
+                {
+                    "name": "ITEM_TAX",
+                    "value": plan_tax,
+                    "currency": currency
+                },
+                {
+                    "name": "ITEM_TAX_RETURN_BASE",
+                    "value": plan_tax_return_base,
+                    "currency": currency
+                }
+            ]
+        }
+        fmt = 'subscriptions/{}/recurringBillItems'.format(subscription_id)
+        return self.client._post(self.url + fmt, json=payload, headers=self.get_headers())
+
+    def get_additional_charge(self, recurring_billing_id):
+        """
+        Query extra charge information of an invoice from its identifier.
+
+        Args:
+            recurring_billing_id: Identifier of the additional charge.
+
+        Returns:
+
+        """
+        fmt = 'recurringBillItems/{}'.format(recurring_billing_id)
+        return self.client._get(self.url + fmt, headers=self.get_headers())
+
+    def update_additional_charge(self, *, recurring_billing_id, description, plan_value, plan_tax, plan_tax_return_base,
+                                 currency):
+        """
+        Updates the information from an additional charge in an invoice.
+
+        Args:
+            recurring_billing_id: Identifier of the additional charge.
+            description:
+            plan_value:
+            plan_tax:
+            plan_tax_return_base:
+            currency:
+
+        Returns:
+
+        """
+        payload = {
+            "description": description,
+            "additionalValues": [
+                {
+                    "name": "ITEM_VALUE",
+                    "value": plan_value,
+                    "currency": currency
+                },
+                {
+                    "name": "ITEM_TAX",
+                    "value": plan_tax,
+                    "currency": currency
+                },
+                {
+                    "name": "ITEM_TAX_RETURN_BASE",
+                    "value": plan_tax_return_base,
+                    "currency": currency
+                }
+            ]
+        }
+        fmt = 'recurringBillItems/{}'.format(recurring_billing_id)
+        return self.client._put(self.url + fmt, payload=payload, headers=self.get_headers())
+
+    def delete_additional_charge(self, recurring_billing_id):
+        """
+        Remove an extra charge from an invoice.
+
+        Args:
+            recurring_billing_id: Identifier of the additional charge.
+
+        Returns:
+
+        """
+        fmt = 'recurringBillItems/{}'.format(recurring_billing_id)
+        return self.client._delete(self.url + fmt, headers=self.get_headers())
+
+    def get_recurring_bill(self, *, customer_id, date_begin=None, date_final=None):
+        """
+        Consulta de las facturas que están pagadas o pendientes por pagar. Se puede consultar por cliente,
+        por suscripción o por rango de fechas.
+
+        Args:
+            customer_id:
+            date_begin:
+            date_final:
+
+        Returns:
+
+        """
+        params = {
+            'customerId': customer_id,
+        }
+        if date_begin and date_final:
+            params['dateBegin'] = date_begin
+            params['dateFinal'] = date_final
+        return self.client._get(self.url + 'recurringBill', params=params, headers=self.get_headers())
+
     def get_headers(self):
         token = '{}:{}'.format(self.client.api_login, self.client.api_key)
         result = base64.b64encode(token.encode('utf-8')).decode('utf-8')
