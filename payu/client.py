@@ -5,6 +5,7 @@ import requests
 
 from .enumerators import Language
 from .payments import Payment
+from .queries import Query
 from .recurring_payments import Recurring
 from .tokenization import Tokenization
 
@@ -37,6 +38,7 @@ class Client(object):
         self.payments = Payment(self)
         self.recurring = Recurring(self)
         self.tokenization = Tokenization(self)
+        self.queries = Query(self)
 
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
