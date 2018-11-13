@@ -448,8 +448,8 @@ class Recurring(object):
             'customerId': customer_id,
         }
         if date_begin and date_final:
-            params['dateBegin'] = date_begin
-            params['dateFinal'] = date_final
+            params['dateBegin'] = date_begin.strftime('%Y-%m-%d')
+            params['dateFinal'] = date_final.strftime('%Y-%m-%d')
         return self.client._get(self.url + 'recurringBill', params=params, headers=self.get_headers())
 
     def get_headers(self):
