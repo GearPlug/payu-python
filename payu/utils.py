@@ -42,6 +42,11 @@ def get_available_franchise_for_payment(country, transaction_type):
             return F.VISA
         else:
             return F.VISA, F.MASTERCARD, F.DINERS, F.AMEX
+    elif country == Country.CHILE:
+        if transaction_type in (TransactionType.AUTHORIZATION, TransactionType.CAPTURE):
+            return None
+        else:
+            return F.VISA, F.MASTERCARD, F.AMEX, F.DINERS
     else:
         raise InvalidCountryError
 

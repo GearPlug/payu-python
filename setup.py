@@ -14,7 +14,7 @@ setup(name='payu-python',
       url='https://github.com/GearPlug/payu-python',
       author='Miguel Ferrer',
       author_email='ingferrermiguel@gmail.com',
-      license='GPL',
+      license='MIT',
       packages=['payu'],
       install_requires=[
           'requests',
