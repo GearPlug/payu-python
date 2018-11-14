@@ -366,7 +366,7 @@ class Recurring(object):
         fmt = 'subscriptions/{}/recurringBillItems'.format(subscription_id)
         return self.client._post(self.url + fmt, json=payload, headers=self.get_headers())
 
-    def get_additional_charge(self, recurring_billing_id):
+    def get_additional_charge_by_identifier(self, recurring_billing_id):
         """
         Query extra charge information of an invoice from its identifier.
 
@@ -378,6 +378,36 @@ class Recurring(object):
         """
         fmt = 'recurringBillItems/{}'.format(recurring_billing_id)
         return self.client._get(self.url + fmt, headers=self.get_headers())
+
+    def get_additional_charge_by_description(self, description):
+        """
+        Query extra charges of shop’s invoices that meet the stipulated filters.
+
+        Args:
+            description: Description entered in the extra charge.
+
+        Returns:
+
+        """
+        params = {
+            'description': description
+        }
+        return self.client._get(self.url + 'recurringBillItems/', params=params, headers=self.get_headers())
+
+    def get_additional_charge_by_subscription(self, subscription_id):
+        """
+        Query extra charges of shop’s invoices that meet the stipulated filters.
+
+        Args:
+            subscription_id: Identification of the subscription.
+
+        Returns:
+
+        """
+        params = {
+            'subscriptionId': subscription_id
+        }
+        return self.client._get(self.url + 'recurringBillItems/', params=params, headers=self.get_headers())
 
     def update_additional_charge(self, *, recurring_billing_id, description, plan_value, plan_tax, plan_tax_return_base,
                                  currency):
@@ -431,7 +461,7 @@ class Recurring(object):
         fmt = 'recurringBillItems/{}'.format(recurring_billing_id)
         return self.client._delete(self.url + fmt, headers=self.get_headers())
 
-    def get_recurring_bill(self, *, customer_id, date_begin=None, date_final=None):
+    def get_recurring_bill_by_client(self, *, customer_id, date_begin=None, date_final=None):
         """
         Consulta de las facturas que están pagadas o pendientes por pagar. Se puede consultar por cliente,
         por suscripción o por rango de fechas.
@@ -450,6 +480,22 @@ class Recurring(object):
         if date_begin and date_final:
             params['dateBegin'] = date_begin.strftime('%Y-%m-%d')
             params['dateFinal'] = date_final.strftime('%Y-%m-%d')
+        return self.client._get(self.url + 'recurringBill', params=params, headers=self.get_headers())
+
+    def get_recurring_bill_by_subscription(self, subscription_id):
+        """
+        Consulta de las facturas que están pagadas o pendientes por pagar. Se puede consultar por cliente,
+        por suscripción o por rango de fechas.
+
+        Args:
+            subscription_id:
+
+        Returns:
+
+        """
+        params = {
+            'subscriptionId': subscription_id,
+        }
         return self.client._get(self.url + 'recurringBill', params=params, headers=self.get_headers())
 
     def get_headers(self):

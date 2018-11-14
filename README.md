@@ -12,8 +12,9 @@ Supported countries:
 * Peru
 * Chile
 
-Read `Utils` section to find out how to get the supported credit cards for a country.
-Read `TODO` section to find out what's missing in this library.
+Read [Utils](https://github.com/GearPlug/payu-python#utils) section to find out how to get the supported credit cards for a country.
+
+Read [TODO](https://github.com/GearPlug/payu-python#todo) section to find out what's missing in this library.
 
 
 ## Installing
@@ -37,8 +38,8 @@ client = Client(TEST_API_LOGIN, TEST_API_KEY, TEST_MERCHANT_ID, TEST_ACCOUNT_ID,
 ```
 BUYER_EXAMPLE = {
     "merchantBuyerId": "1",
-    "fullName": "Miguel Ferrer",
-    "emailAddress": "mferrer@gearplug.io",
+    "fullName": "First name and second buyer name",
+    "emailAddress": "buyer_test@test.com",
     "contactPhone": "7563126",
     "dniNumber": "5415668464654",
     "shippingAddress": {
@@ -54,8 +55,8 @@ BUYER_EXAMPLE = {
 
 PAYER_EXAMPLE = {
     "merchantPayerId": "1",
-    "fullName": "Miguel Ferrer",
-    "emailAddress": "mferrer@gearplug.io",
+    "fullName": "First name and second payer name",
+    "emailAddress": "payer_test@test.com",
     "contactPhone": "7563126",
     "dniNumber": "5415668464654",
     "billingAddress": {
@@ -132,7 +133,7 @@ r = client.payments.refund_payment(order_id='844928300', parent_transaction_id='
 
 #### Create a single token
 ```
-r = client.tokenization.create_single_token(payer_id='1', name='Miguel Ferrer', identification_number='555555', 
+r = client.tokenization.create_single_token(payer_id='1', name='Full name', identification_number='32144457', 
                                             payment_method='VISA', number='4111111111111111', expiration_date='2022/01')
 ```
 
@@ -184,7 +185,7 @@ r = client.recurring.create_plan(plan_code='PLAN_CODE', description='Test Plan',
                                  plan_tax_return_base=0, currency='COP')
 ```
 
-#### Get plan
+#### Get a plan
 ```
 r = client.recurring.get_plan('PLAN_CODE')
 ```
@@ -196,10 +197,10 @@ r = client.recurring.delete_plan('PLAN_CODE')
 
 #### Create a customer
 ```
-r = client.recurring.create_customer(full_name='Miguel Ferrer', email='mferrer@gearplug.io')
+r = client.recurring.create_customer(full_name='Full name', email='customer_test@test.com')
 ```
 
-#### Get customer
+#### Get a customer
 ```
 r = client.recurring.get_customer('CUSTOMER_ID')
 ```
@@ -211,12 +212,12 @@ r = client.recurring.delete_customer('CUSTOMER_ID')
 
 #### Create a credit card
 ```
-r = client.recurring.create_credit_card(customer_id='CUSTOMER_ID', name'Miguel Ferrer', document='555555', 
+r = client.recurring.create_credit_card(customer_id='CUSTOMER_ID', name'Full name', document='32144457', 
                                         number='4111111111111111', exp_month='01', exp_year='2022', type='VISA', 
                                         address='calle 93 125544 Bogota')
 ```
 
-#### Get credit card
+#### Get a credit card
 ```
 r = client.recurring.get_credit_card('CREDIT_CARD_ID')
 ```
@@ -232,7 +233,7 @@ r = client.recurring.create_subscription(customer_id='CUSTOMER_ID', credit_card_
                                          plan_code='PLAN_CODE')
 ```
 
-#### Get subscription
+#### Get a subscription
 ```
 r = client.recurring.get_subscription('SUBSCRIPTION_ID')
 ```
@@ -254,9 +255,19 @@ r = client.recurring.create_additional_charge(subscription_id='SUBSCRIPTION_ID',
                                               currency='COP')
 ```
 
-#### Get additional charge
+#### Get an additional charge by identifier
 ```
-r = client.recurring.get_additional_charge('RECURRING_BILLING_ID')
+r = client.recurring.get_additional_charge_by_identifier('RECURRING_BILLING_ID')
+```
+
+#### Get an additional charge by description
+```
+r = client.recurring.get_additional_charge_by_description('DESCRIPTION')
+```
+
+#### Get an additional charge by subscription
+```
+r = client.recurring.get_additional_charge_by_subscription('SUBSCRIPTION_ID')
 ```
 
 #### Update an additional charge
@@ -270,13 +281,18 @@ r = client.recurring.update_additional_charge(recurring_billing_id='RECURRING_BI
 r = client.recurring.delete_additional_charge('RECURRING_BILLING_ID')
 ```
 
-#### Get recurring bill
+#### Get recurring bill by client
 ```
 import datetime
 
-r = client.recurring.get_recurring_bill(customer_id='CUSTOMER_ID', 
-                                        date_begin=datetime.datetime.now().replace(year=2017), 
-                                        date_final=datetime.datetime.now())
+r = client.recurring.get_recurring_bill_by_client(customer_id='CUSTOMER_ID', 
+                                                  date_begin=datetime.datetime.now().replace(year=2017), 
+                                                  date_final=datetime.datetime.now())
+```
+
+#### Get recurring bill by subscription
+```
+r = client.recurring.get_recurring_bill_by_subscription('SUBSCRIPTION_ID')
 ```
 
 ### Queries Module

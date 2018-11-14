@@ -8,7 +8,7 @@ def read(fname):
 
 
 setup(name='payu-python',
-      version='0.1.0',
+      version='0.1.1',
       description='API wrapper for Payu written in Python',
       long_description=read('README.md'),
       url='https://github.com/GearPlug/payu-python',
