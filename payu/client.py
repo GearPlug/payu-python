@@ -66,6 +66,20 @@ class Client(object):
         return self._request('DELETE', url, **kwargs)
 
     def _request(self, method, url, headers=None, **kwargs):
+        """
+        Normally the connection guarantees response times of 3 seconds on average,
+        if there is an abnormal situation, the maximum response time is 1 minute.
+        It is highly recommended that you set “timeouts” when you connect with PayU.
+
+        Args:
+            method:
+            url:
+            headers:
+            **kwargs:
+
+        Returns:
+
+        """
         _headers = {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
@@ -75,7 +89,7 @@ class Client(object):
 
         if self.is_debug:
             self.logger.debug('{} {} {} {}'.format(method, url, headers, kwargs))
-        return self._parse(requests.request(method, url, headers=_headers, **kwargs))
+        return self._parse(requests.request(method, url, headers=_headers, timeout=60, **kwargs))
 
     def _parse(self, response):
         if 'Content-Type' in response.headers and 'application/json' in response.headers['Content-Type']:
