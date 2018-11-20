@@ -4,8 +4,8 @@ from .utils import get_available_franchise_for_tokenization, has_franchise_cvv_t
 
 
 class Tokenization(object):
-    TEST_BASE = 'https://sandbox.api.payulatam.com/payments-api/4.0/service.cgi'
-    PROD_BASE = 'https://api.payulatam.com/payments-api/4.0/service.cgi'
+    TEST_BASE = 'https://sandbox.api.payulatam.com/payments-api/4.9/service.cgi'
+    PROD_BASE = 'https://api.payulatam.com/payments-api/4.9/service.cgi'
 
     def __init__(self, client):
         self.client = client

@@ -22,6 +22,12 @@ Read [TODO](https://github.com/GearPlug/payu-python#todo) section to find out wh
 pip install payu-python
 ```
 
+## Django implementation
+
+If you are going to use this with your Django application, we recommend you to use our django implementation:
+
+[django-payu-latam](https://github.com/GearPlug/django-payu-latam)
+
 ## Usage
 
 ### Client instantiation in sandbox mode (test)
@@ -355,6 +361,9 @@ r = get_available_franchise_for_tokenization(Franchise.VISA, Country.COLOMBIA, T
 * update_plan()
 * update_customer()
 * update_credit_card()
+
+## Requirements
+* [requests](https://github.com/requests/requests)
 
 ## Contributing
 We are always grateful for any kind of contribution including but not limited to bug reports, code enhancements, bug fixes, and even functionality suggestions.

@@ -2,8 +2,8 @@ import base64
 
 
 class Recurring(object):
-    TEST_BASE = 'https://sandbox.api.payulatam.com/payments-api/rest/v4.3/'
-    PROD_BASE = 'https://api.payulatam.com/payments-api/rest/v4.3/'
+    TEST_BASE = 'https://sandbox.api.payulatam.com/payments-api/rest/v4.9/'
+    PROD_BASE = 'https://api.payulatam.com/payments-api/rest/v4.9/'
 
     def __init__(self, client):
         self.client = client
@@ -240,7 +240,8 @@ class Recurring(object):
         return self.client._delete(self.url + fmt, headers=self.get_headers())
 
     def create_subscription(self, *, customer_id, credit_card_token, plan_code, quantity=None, installments=None,
-                            trial_days=None):
+                            trial_days=None, immediate_payment=None, extra1=None, extra2=None, delivery_address=None,
+                            notify_url=None, recurring_bill_items=None):
         """
         Creating a new subscription of a client to a plan.
 
@@ -264,6 +265,18 @@ class Recurring(object):
             This variable has preference over the plan's trial days.
             Numeric.
 
+            immediate_payment:
+
+            extra1:
+
+            extra2:
+
+            delivery_address:
+
+            notify_url:
+
+            recurring_bill_items:
+
         Returns:
 
         """
@@ -271,6 +284,9 @@ class Recurring(object):
             "quantity": quantity,
             "installments": installments,
             "trialDays": trial_days,
+            "immediatePayment": immediate_payment,
+            "extra1": extra1,
+            "extra2": extra2,
             "customer": {
                 "id": customer_id,
                 "creditCards": [
@@ -281,7 +297,10 @@ class Recurring(object):
             },
             "plan": {
                 "planCode": plan_code
-            }
+            },
+            "deliveryAddress": delivery_address,
+            "notifyUrl": notify_url,
+            "recurringBillItems": recurring_bill_items
         }
         return self.client._post(self.url + 'subscriptions', json=payload, headers=self.get_headers())
 
