@@ -1,15 +1,13 @@
-from .enumerators import Country, Currency, Franchise, PaymentCommand, TransactionType
-from .exceptions import CVVRequiredError, FranchiseUnavailableError
-from .utils import get_available_franchise_for_tokenization, has_franchise_cvv_tokenization
+from payu.enumerators import Country, Currency, Franchise, PaymentCommand, TransactionType
+from payu.exceptions import CVVRequiredError, FranchiseUnavailableError
+from payu.utils import get_available_franchise_for_tokenization, has_franchise_cvv_tokenization
 
 
 class Tokenization(object):
-    TEST_BASE = 'https://sandbox.api.payulatam.com/payments-api/4.9/service.cgi'
-    PROD_BASE = 'https://api.payulatam.com/payments-api/4.9/service.cgi'
 
     def __init__(self, client):
         self.client = client
-        self.url = self.TEST_BASE if self.client.is_test else self.PROD_BASE
+        self.url = self.client.url + '/payments-api/{}/service.cgi'.format(self.client.payments_api_version)
 
     def create_single_token(self, *, payer_id, name, identification_number, payment_method, number, expiration_date):
         """

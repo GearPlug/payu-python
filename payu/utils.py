@@ -1,5 +1,5 @@
-from .enumerators import Country, Franchise as F, TransactionType
-from .exceptions import InvalidCountryError
+from payu.enumerators import Country, Franchise as F, TransactionType
+from payu.exceptions import InvalidCountryError
 
 
 def get_available_franchise_for_payment(country, transaction_type):

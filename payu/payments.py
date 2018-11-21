@@ -1,36 +1,34 @@
-from .enumerators import Country, Currency, Franchise, PaymentCommand, TransactionType
-from .exceptions import CVVRequiredError
-from .utils import get_available_franchise_for_payment
+from payu.enumerators import Country, Currency, Franchise, PaymentCommand, TransactionType
+from payu.exceptions import CVVRequiredError
+from payu.utils import get_available_franchise_for_payment
 
 
 class Payment(object):
-    TEST_BASE = 'https://sandbox.api.payulatam.com/payments-api/4.9/service.cgi'
-    PROD_BASE = 'https://api.payulatam.com/payments-api/4.9/service.cgi'
 
     def __init__(self, client):
         self.client = client
-        self.url = self.TEST_BASE if self.client.is_test else self.PROD_BASE
+        self.url = self.client.url + '/payments-api/{}/service.cgi'.format(self.client.payments_api_version)
 
     def ping(self):
         payload = {
-            'test': self.client.is_test,
-            'language': self.client.language.value,
-            'command': PaymentCommand.PING.value,
-            'merchant': {
-                'apiLogin': self.client.api_login,
-                'apiKey': self.client.api_key
+            "test": self.client.is_test,
+            "language": self.client.language.value,
+            "command": PaymentCommand.PING.value,
+            "merchant": {
+                "apiLogin": self.client.api_login,
+                "apiKey": self.client.api_key
             }
         }
         return self.client._post(self.url, json=payload)
 
     def get_payments_methods(self):
         payload = {
-            'test': self.client.is_test,
-            'language': self.client.language.value,
-            'command': PaymentCommand.GET_PAYMENT_METHODS.value,
-            'merchant': {
-                'apiLogin': self.client.api_login,
-                'apiKey': self.client.api_key
+            "test": self.client.is_test,
+            "language": self.client.language.value,
+            "command": PaymentCommand.GET_PAYMENT_METHODS.value,
+            "merchant": {
+                "apiLogin": self.client.api_login,
+                "apiKey": self.client.api_key
             }
         }
         return self.client._post(self.url, json=payload)

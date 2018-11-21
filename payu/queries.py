@@ -1,22 +1,20 @@
-from .enumerators import QueryCommand
+from payu.enumerators import QueryCommand
 
 
 class Query(object):
-    TEST_BASE = 'https://sandbox.api.payulatam.com/reports-api/4.0/service.cgi'
-    PROD_BASE = 'https://api.payulatam.com/reports-api/4.0/service.cgi'
 
     def __init__(self, client):
         self.client = client
-        self.url = self.TEST_BASE if self.client.is_test else self.PROD_BASE
+        self.url = self.client.url + '/reports-api/{}/service.cgi'.format(self.client.reports_api_version)
 
     def ping(self):
         payload = {
-            'test': self.client.is_test,
-            'language': self.client.language.value,
-            'command': QueryCommand.PING.value,
-            'merchant': {
-                'apiLogin': self.client.api_login,
-                'apiKey': self.client.api_key
+            "test": self.client.is_test,
+            "language": self.client.language.value,
+            "command": QueryCommand.PING.value,
+            "merchant": {
+                "apiLogin": self.client.api_login,
+                "apiKey": self.client.api_key
             }
         }
         return self.client._post(self.url, json=payload)

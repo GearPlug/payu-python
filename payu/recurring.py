@@ -2,12 +2,10 @@ import base64
 
 
 class Recurring(object):
-    TEST_BASE = 'https://sandbox.api.payulatam.com/payments-api/rest/v4.9/'
-    PROD_BASE = 'https://api.payulatam.com/payments-api/rest/v4.9/'
 
     def __init__(self, client):
         self.client = client
-        self.url = self.TEST_BASE if self.client.is_test else self.PROD_BASE
+        self.url = self.client.url + '/payments-api/rest/v{}/'.format(self.client.recurring_api_version)
 
     def create_plan(self, *, plan_code, description, interval, interval_count, max_payments_allowed,
                     payment_attempts_delay, plan_value, plan_tax, plan_tax_return_base, currency,
@@ -133,8 +131,8 @@ class Recurring(object):
 
         """
         payload = {
-            'fullName': full_name,
-            'email': email
+            "fullName": full_name,
+            "email": email
         }
         return self.client._post(self.url + 'customers', json=payload, headers=self.get_headers())
 
@@ -409,7 +407,7 @@ class Recurring(object):
 
         """
         params = {
-            'description': description
+            "description": description
         }
         return self.client._get(self.url + 'recurringBillItems/', params=params, headers=self.get_headers())
 
@@ -424,7 +422,7 @@ class Recurring(object):
 
         """
         params = {
-            'subscriptionId': subscription_id
+            "subscriptionId": subscription_id
         }
         return self.client._get(self.url + 'recurringBillItems/', params=params, headers=self.get_headers())
 
@@ -494,7 +492,7 @@ class Recurring(object):
 
         """
         params = {
-            'customerId': customer_id,
+            "customerId": customer_id,
         }
         if date_begin and date_final:
             params['dateBegin'] = date_begin.strftime('%Y-%m-%d')
@@ -513,7 +511,7 @@ class Recurring(object):
 
         """
         params = {
-            'subscriptionId': subscription_id,
+            "subscriptionId": subscription_id,
         }
         return self.client._get(self.url + 'recurringBill', params=params, headers=self.get_headers())
 
