@@ -40,7 +40,8 @@ class Franchise(Enum):
     CENCOSUD = 'CENCOSUD'
     HIPERCARD = 'HIPERCARD'
     CODENSA = 'CODENSA'
-    VISA_DEBIT = 'VISA_DEBIT'
+    VISA_DEBIT = 'VISA'
+    MASTERCARD_DEBIT = 'MASTERCARD'
 
 
 class DocumentType(Enum):

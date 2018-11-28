@@ -10,7 +10,6 @@ Supported countries:
 * Mexico
 * Panama
 * Peru
-* Chile
 
 Read [Utils](https://github.com/GearPlug/payu-python#utils) section to find out how to get the supported credit cards for a country.
 
@@ -37,7 +36,7 @@ TEST_API_KEY = '4Vj8eK4rloUd272L48hsrarnUA'
 TEST_MERCHANT_ID = 508029
 TEST_ACCOUNT_ID = 512321
 
-client = Client(TEST_API_LOGIN, TEST_API_KEY, TEST_MERCHANT_ID, TEST_ACCOUNT_ID, test=True, language='en', debug=True)
+client = Client(TEST_API_LOGIN, TEST_API_KEY, TEST_MERCHANT_ID, TEST_ACCOUNT_ID, sandbox=True, language='en', debug=True)
 ```
 
 ### Example data for sandbox mode
@@ -361,6 +360,22 @@ r = get_available_franchise_for_tokenization(Franchise.VISA, Country.COLOMBIA, T
 * update_plan()
 * update_customer()
 * update_credit_card()
+
+## Notes
+Payment flows:
+* Authorization and Capture as two-steps.
+* Authorization and Capture in one-step also known as Charge.
+
+Countries that have two-step payment flow available:
+* Argentina
+* Brazil
+* Peru
+
+Countries that does not need CVV for tokenized payments.
+* Brazil
+* Colombia
+* Peru
+
 
 ## Requirements
 * [requests](https://github.com/requests/requests)

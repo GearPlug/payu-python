@@ -39,10 +39,11 @@ class Payment(object):
                      transaction_type=TransactionType.AUTHORIZATION_AND_CAPTURE):
         """
         Authorization: used to verify if a credit card is active, if it has funds, etc.
-        The transaction is not complete until a transaction capture is sent (only available for accounts in Brazil).
+        The transaction is not complete until a transaction capture is sent (only available for accounts in Argentina,
+        Brazil, Peru).
 
         Capture: terminates a previously authorized transaction.
-        This is when the account makes a debit to the card (only available for accounts in Brazil).
+        This is when the account makes a debit to the card (only available for accounts in Argentina, Brazil, Peru).
 
         Authorization and capture: this is the most used type of transaction.
         This option sends the transaction amount to authorization and if it is approved immediately capture is performed.
